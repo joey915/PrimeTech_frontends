@@ -6,7 +6,6 @@ import api from "../api/api";
 function Checkout() {
     const { cart, clearCart } = useContext(CartContext);
     const [loading, setLoading] = useState(false);
-    //const navigate = useNavigate();
 
     const total = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
 
