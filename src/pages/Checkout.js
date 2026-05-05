@@ -7,6 +7,7 @@ function Checkout() {
     const { cart, clearCart } = useContext(CartContext);
     const [loading, setLoading] = useState(false);
 
+    
     const total = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
 
     const handlePayment = async () => {
