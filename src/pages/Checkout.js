@@ -7,8 +7,16 @@ function Checkout() {
     const { cart, clearCart } = useContext(CartContext);
     const [loading, setLoading] = useState(false);
 
-    
-    const total = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+    const navigate = useNavigate();
+
+    const handleCheckout = () => {
+        navigate("/success");
+    };
+
+    const total = cart.reduce(
+        (sum, item) => sum + (item.price * (item.quantity || 1)),
+        0
+    );
 
     const handlePayment = async () => {
         setLoading(true);
@@ -48,7 +56,11 @@ function Checkout() {
                 <>
                     {cart.map(item => (
                         <div key={item.productID}>
-                            <p>{item.productName} - ${item.price} x {item.quantity || 1} = ${(item.price * (item.quantity || 1)).toFixed(2)}</p>
+                            <p>
+                                {item.productName} - ${item.price} x{" "}
+                                {item.quantity || 1} = $
+                                {(item.price * (item.quantity || 1)).toFixed(2)}
+                            </p>
                         </div>
                     ))}
 
@@ -56,6 +68,10 @@ function Checkout() {
 
                     <button onClick={handlePayment} disabled={loading}>
                         {loading ? "Processing..." : "Pay with PayNow"}
+                    </button>
+
+                    <button onClick={handleCheckout}>
+                        Success Page
                     </button>
                 </>
             )}
