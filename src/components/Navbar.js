@@ -21,7 +21,7 @@ function Navbar() {
 
     return (
         <div className="navbar">
-            <h2>OnlineStore</h2>
+            <h2>PrimeTech Store</h2>
 
             <div className="links">
                 <Link to="/">Products</Link>
