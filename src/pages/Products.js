@@ -12,8 +12,15 @@ function Products() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await api.get("/products");
-                setProducts(response.data);
+                // ✅ FIX: correct backend route
+                const response = await api.get("/api/products");
+
+                // 🛡️ safety check (prevents "map is not a function")
+                const data = Array.isArray(response.data)
+                    ? response.data
+                    : response.data?.$values || [];
+
+                setProducts(data);
             } catch (err) {
                 console.error("Failed to load products", err);
                 setError("Unable to load products");
@@ -33,16 +40,20 @@ function Products() {
             {error && <p>{error}</p>}
 
             <div className="grid">
-                {products.map(product => (
-                    <ProductCard
-                        key={product.productID || product.id}
-                        product={product}
-                        addToCart={addToCart}
-                    />
-                ))}
+                {Array.isArray(products) &&
+                    products.map(product => (
+                        <ProductCard
+                            key={product.productID || product.id}
+                            product={product}
+                            addToCart={addToCart}
+                        />
+                    ))
+                }
             </div>
 
-            {!loading && !products.length && !error && <p>No products found.</p>}
+            {!loading && !products.length && !error && (
+                <p>No products found.</p>
+            )}
         </div>
     );
 }
