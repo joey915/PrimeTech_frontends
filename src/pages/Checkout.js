@@ -26,25 +26,38 @@ function Checkout() {
 
         try {
             // ======================
-            // 1️⃣ CREATE ORDER
+            // 1️⃣ CREATE ORDER (FIXED AUTH HEADER)
             // ======================
-            const orderResponse = await api.post("/api/orders", {
-                totalAmount: total,
-                status: "Pending"
-            });
+            const orderResponse = await api.post(
+                "/api/orders",
+                {
+                    totalAmount: total,
+                    status: "Pending"
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
 
             const orderId =
                 orderResponse.data.orderID ||
                 orderResponse.data.id;
 
             // ======================
-            // 2️⃣ PAYNOW REQUEST
+            // 2️⃣ PAYNOW REQUEST (ALSO SECURED)
             // ======================
             const paymentResponse = await api.post(
                 "/api/paynow/create",
                 {
                     orderId: orderId,
                     amount: total
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
                 }
             );
 
@@ -57,10 +70,13 @@ function Checkout() {
             } else {
                 alert("Payment gateway did not return redirect URL");
             }
+
         } catch (err) {
             console.error("PAYNOW ERROR:", err);
 
-            // ✅ SAFE ERROR HANDLING (IMPORTANT FIX)
+            // ======================
+            // SAFE ERROR HANDLING
+            // ======================
             const errors = err.response?.data?.errors;
 
             const message =
@@ -70,7 +86,7 @@ function Checkout() {
                       err.response?.data?.message ||
                       "Payment failed";
 
-            alert(message); // 🔥 NEVER render object in JSX
+            alert(message);
         } finally {
             setLoading(false);
         }
