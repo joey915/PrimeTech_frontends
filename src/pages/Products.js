@@ -9,13 +9,14 @@ function Products() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // ✅ NEW: success message state
+    const [message, setMessage] = useState("");
+
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                // ✅ FIX: correct backend route
                 const response = await api.get("/api/products");
 
-                // 🛡️ safety check (prevents "map is not a function")
                 const data = Array.isArray(response.data)
                     ? response.data
                     : response.data?.$values || [];
@@ -32,23 +33,50 @@ function Products() {
         fetchProducts();
     }, []);
 
+    // ✅ FIXED ADD TO CART WITH MESSAGE
+    const handleAddToCart = (product) => {
+        addToCart(product);
+
+        setMessage(
+            "Successfully added to cart. Click Cart to view it."
+        );
+
+        setTimeout(() => {
+            setMessage("");
+        }, 3000);
+    };
+
     return (
         <div style={{ padding: 20 }}>
             <h2>Products</h2>
+
+            {/* ✅ SUCCESS MESSAGE */}
+            {message && (
+                <div
+                    style={{
+                        background: "#4CAF50",
+                        color: "white",
+                        padding: "10px",
+                        marginBottom: "10px",
+                        borderRadius: "5px"
+                    }}
+                >
+                    {message}
+                </div>
+            )}
 
             {loading && <p>Loading products...</p>}
             {error && <p>{error}</p>}
 
             <div className="grid">
                 {Array.isArray(products) &&
-                    products.map(product => (
+                    products.map((product) => (
                         <ProductCard
                             key={product.productID || product.id}
                             product={product}
-                            addToCart={addToCart}
+                            addToCart={handleAddToCart} // ✅ IMPORTANT FIX
                         />
-                    ))
-                }
+                    ))}
             </div>
 
             {!loading && !products.length && !error && (
